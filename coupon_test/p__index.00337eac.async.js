@@ -1,0 +1,1 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([[8],{QeBL:function(e,t,n){"use strict";var u=n("g09b");Object.defineProperty(t,"__esModule",{value:!0}),t.default=c;var o=u(n("q1tI")),a=u(n("lRau"));function c(){return o.default.createElement(a.default,{to:"/coupon"})}}}]);
