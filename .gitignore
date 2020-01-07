@@ -8,6 +8,7 @@
 /package-lock.json
 
 # production
+/coupon_test
 /dist
 /dist1
 /build
