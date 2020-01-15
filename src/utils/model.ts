@@ -9,7 +9,7 @@ import {
   lotteryHandle,
   shareFriend,
   shareCommunity,
-  getAvailableCount
+  getAvailableCount,
 } from "@/services/api";
 
 export interface GlobalModelType {
@@ -36,13 +36,20 @@ export interface GlobalModelType {
 export const GlobalModel: GlobalModelType = {
   state: {
     initConfig: {
-      StartTimeStamp: 0,
-      EndTimeStamp: 0,
-      LuckyChanceCount: 0,
-      Name: '',
-      CustomerId: "",
-      OpenId: "",
-      ShareImage: "",
+      ActivityId: '',
+      ActivityName: '',
+      ActivityImageUrl: '',
+      ActivityStartTimeSpan: 0,
+      ActivityEndTimeSpan: 0,
+      ShareImageUrl: '',
+      ShareDesc: '',
+      IsRecommand: 0,
+      ActivityDetail: '',
+      ReproductionUrl: '',
+      DrawType: 0,
+      TurnTableImageUrl: '',
+      OpenId: '',
+      CustomerId: '',
     },
     allRecord: [],
     userRecord: [],
@@ -52,42 +59,42 @@ export const GlobalModel: GlobalModelType = {
   effects: {
     *getInit({ payload }, { all, call, put }) {
       yield put({ type: 'setActivityId', payload })
-      const [result1, result2, result3, result4]  = yield all([
+      const [result1, result2, result3, result4] = yield all([
         call(getConfig, payload),
         call(getAllRecord, payload),
         call(getUserRecord, payload),
         call(getAvailableCount, payload)
       ])
 
-      if(result1.Status === 1){
+      if (result1.Status === 1) {
         yield put({
           type: 'updateConfig',
           payload: { initConfig: result1.Data }
         })
       }
-      if(result2.Status === 1){
+      if (result2.Status === 1) {
         yield put({
           type: 'updateAllRecord',
           payload: { allRecord: result2.Data }
         })
       }
-      if(result3.Status === 1){
+      if (result3.Status === 1) {
         yield put({
           type: 'updateUserRecord',
           payload: { userRecord: result3.Data }
         })
       }
-      if(result4.Status === 1){
+      if (result4.Status === 1) {
         yield put({
           type: 'updateAvailableCount',
-          payload: { UnUseCount: result4.Data.UnUseCount }
+          payload: { UnUseCount: result4.Data }
         })
       }
     },
     *lotteryHandle({ payload }, { all, call, put }) {
       const response = yield call(lotteryHandle, payload)
       const { Data, Status } = response;
-      if(Status === 1) return Data
+      if (Status === 1) return Data
     },
     *shareFriend({ payload }, { all, call, put }) {
       const response = yield call(shareFriend, payload)
@@ -99,7 +106,7 @@ export const GlobalModel: GlobalModelType = {
       const response = yield call(shareCommunity, payload)
       console.log("分享朋友圈：", response)
       const { Status } = response;
-      if(Status === 1) {
+      if (Status === 1) {
         return {
           flag: true
         }
@@ -108,17 +115,17 @@ export const GlobalModel: GlobalModelType = {
     *getAvailableCount({ payload }, { all, call, put }) {
       const response = yield call(getAvailableCount, payload)
       const { Data, Status } = response;
-      if(Status === 1) {
+      if (Status === 1) {
         yield put({
           type: 'updateAvailableCount',
-          payload: { UnUseCount: Data.UnUseCount }
+          payload: { UnUseCount: Data }
         })
       }
     },
     *getAllRecord({ payload }, { all, call, put }) {
       const response = yield call(getAllRecord, payload)
       const { Data, Status } = response
-      if(Status === 1) {
+      if (Status === 1) {
         yield put({
           type: 'updateAllRecord',
           payload: { allRecord: Data }
@@ -128,7 +135,7 @@ export const GlobalModel: GlobalModelType = {
     *getUserRecord({ payload }, { all, call, put }) {
       const response = yield call(getUserRecord, payload)
       const { Data, Status } = response
-      if(Status === 1) {
+      if (Status === 1) {
         yield put({
           type: 'updateUserRecord',
           payload: { userRecord: Data }
@@ -143,12 +150,12 @@ export const GlobalModel: GlobalModelType = {
         ...state, activityId,
       };
     },
-    updateConfig(state, { payload: { initConfig } })  {
+    updateConfig(state, { payload: { initConfig } }) {
       return {
         ...state, initConfig,
       };
     },
-    updateCount(state, { payload: { UnUseCount } })  {
+    updateCount(state, { payload: { UnUseCount } }) {
       return {
         ...state, UnUseCount,
       };

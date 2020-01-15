@@ -3,18 +3,17 @@ export const CANCEL_REQUEST_MESSAGE: string = 'cancle request';
 export const WX_PREFIX = process.env.NODE_ENV === 'development' ? '/wx' : '';
 
 export const codeMessage = {
-  1: '没有活动',
-  2: '活动没有发布',
-  3: '取消发布',
-  4: '活动没有开始',
-  5: '活动已结束',
-  6: '您的机会已用完',
-  7: '所有奖项结束',
-  8: '时段奖项结束',
-  9: '未找到奖品',
-  10: '奖品库存不足',
-  11: '未设置产品角度信息',
-  12: '未设置奖品发放规则',
+  1: '活动异常',
+  2: '没有抽奖机会',
+  3: '没有奖品',
+  4: '全部奖品发完',
+  5: '当前奖品发完',
+  6: '未中奖',
+  7: '抽奖机会错误',
+  8: '奖池错误',
+  9: '未确认抽奖人身份',
+  10: '转盘错误',
+  11: '中奖',
 };
 
 export const eggInitData = [

@@ -1,6 +1,6 @@
-import React, { PureComponent} from "react";
+import React, { PureComponent } from "react";
 import { Helmet } from 'react-helmet'
-import {connect} from "dva";
+import { connect } from "dva";
 import lottie from 'lottie-web';
 import { Carousel, GameItemCard, GiftModal, Page, ShareModal } from '@/components'
 import { ConnectState } from "@/models/connect";
@@ -23,7 +23,7 @@ interface ShakeState {
 }
 
 
-@connect(({ app, shake, loading }: ConnectState) => ({ app, shake, loading}))
+@connect(({ app, shake, loading }: ConnectState) => ({ app, shake, loading }))
 class ShakePage extends PureComponent<shakeModelState, ShakeState> {
 
   private lottieRef: React.RefObject<any> = React.createRef();
@@ -68,18 +68,18 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
     });
 
     wx.ready(() => {
-      _self.setState((pre) => ({shareStatus: false}))
+      _self.setState((pre) => ({ shareStatus: false }))
       const { shake, dispatch, } = _self.props;
       const { initConfig, activityId } = shake;
-      const { OpenId, CustomerId, ShareImage } = initConfig;
-      if(activityId && OpenId && CustomerId && ShareImage) {
-        _shareFriendAndCommunity('shake','shake', dispatch, ShareImage, activityId, OpenId, CustomerId, '2', '1');
+      const { OpenId, CustomerId, ShareImageUrl, ActivityDetail } = initConfig;
+      if (activityId && OpenId && CustomerId && ShareImageUrl) {
+        _shareFriendAndCommunity('shake', 'shake', dispatch, ShareImageUrl, activityId, OpenId, CustomerId, '2', '1');
       }
 
     });
 
     wx.error(() => {
-      _self.setState((pre) => ({shareStatus: true}))
+      _self.setState((pre) => ({ shareStatus: true }))
     });
   }
 
@@ -87,30 +87,30 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
   shareHandle = () => {
     const { shake, dispatch } = this.props;
     const { initConfig, activityId } = shake;
-    const { OpenId, CustomerId, ShareImage } = initConfig;
-    if(!OpenId) {
+    const { OpenId, CustomerId, ShareImageUrl } = initConfig;
+    if (!OpenId) {
       alert('分享失败', '活动仅限会员参与，是否注册会员?', [
-        { text: '取消', onPress: () => {}},
+        { text: '取消', onPress: () => { } },
         { text: '去注册', onPress: () => window.location.href = `${BASE_URL}/WestMember/RegisteMember?fromtype=1` },
       ])
-    }else {
+    } else {
       this.setState((pre) => ({
         shareVisible: true
       }), () => {
-        _shareFriendAndCommunity('shake','shake', dispatch, ShareImage, activityId, OpenId, CustomerId, '2', '1');
+        _shareFriendAndCommunity('shake', 'shake', dispatch, ShareImageUrl, activityId, OpenId, CustomerId, '2', '1');
 
         // wx.onMenuShareAppMessage({
         //   title: '分享好友', // 分享标题
         //   desc: '抽奖活动分享', // 分享描述
         //   link: `http://ydhtest.fetower.com/WestLuckyDraw/ExternalShareGuide?address=dist&routing=shake&activityId=${activityId}&fromOpenid=${OpenId}&fromCustId=${CustomerId}&shareType=2`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-        //   imgUrl: ShareImage, // 分享图标
+        //   imgUrl: ShareImageUrl, // 分享图标
         //   success: function () {},
         // })
         //
         // wx.onMenuShareTimeline({
         //   title: '分享朋友圈', // 分享标题
         //   link: `http://ydhtest.fetower.com/WestLuckyDraw/ExternalShareGuide?address=dist&routing=shake&activityId=${activityId}&fromOpenid=${OpenId}&fromCustId=${CustomerId}&shareType=1`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-        //   imgUrl: ShareImage, // 分享图标
+        //   imgUrl: ShareImageUrl, // 分享图标
         //   success: function () {
         //     dispatch({
         //       type: 'shake/shareCommunity',
@@ -134,30 +134,30 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
     lottie.destroy('lottie1')
   }
 
-  onClose = () => {this.setState({ visible: false })}
+  onClose = () => { this.setState({ visible: false }) }
 
   getPrizehandle = () => {
     const { dispatch, shake } = this.props;
     const { UnUseCount, initConfig, activityId } = shake;
-    const { EndTimeStamp, StartTimeStamp } = initConfig;
+    const { ActivityEndTimeSpan, ActivityStartTimeSpan } = initConfig;
     //拦截
-    if(moment().valueOf() < StartTimeStamp) return;
-    if(moment().valueOf() > EndTimeStamp) return;
+    if (moment().valueOf() < ActivityStartTimeSpan) return;
+    if (moment().valueOf() > ActivityEndTimeSpan) return;
 
     // const match = pathMatchRegexp('/shake/:id', location.pathname)
     //
     // if(!match) return;
     // const activityId = match[1];
-
     dispatch({
       type: "shake/lotteryHandle",
       payload: { activityId }
     }).then((e: prizeStatus) => {
+      console.log(e)
       const { Status, PrizeImage } = e;
-      if( Status === 100 ) {
+      if (Status === 20) {
 
-        dispatch({type: 'shake/getAllRecord', payload: { activityId }});
-        dispatch({type: 'shake/getUserRecord', payload: { activityId }});
+        dispatch({ type: 'shake/getAllRecord', payload: { activityId } });
+        dispatch({ type: 'shake/getUserRecord', payload: { activityId } });
 
         this.setState((pre) => ({
           visible: true,
@@ -173,7 +173,7 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
           })
         })
         //填充文字
-      } else if( Status === 101 ){
+      } else if (Status === 6) {
         this.setState((pre) => ({
           visible: true,
           status: false,
@@ -187,51 +187,51 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
             }
           })
         })
-      }else {
+      } else {
         const errorText = codeMessage[Status] || "抽奖失败";
         alert(errorText, '')
       }
     })
   }
 
-  shareOnClose = () => {this.setState({ shareVisible: false, });}
+  shareOnClose = () => { this.setState({ shareVisible: false, }); }
 
 
   render() {
     const { visible, shareStatus, status, img, shareVisible } = this.state;
     const { shake, loading } = this.props;
     const { initConfig, allRecord, userRecord, UnUseCount } = shake;
-    const { StartTimeStamp, EndTimeStamp, Name } = initConfig;
+    const { ActivityStartTimeSpan, ActivityEndTimeSpan, ActivityName } = initConfig;
     const shareProps = {
       visible: shareVisible,
       onClose: this.shareOnClose
     }
 
-    const btnStatus = StartTimeStamp > moment().valueOf() ? 1 : moment().valueOf() > EndTimeStamp ? 2 : 0;
+    const btnStatus = ActivityStartTimeSpan > moment().valueOf() ? 1 : moment().valueOf() > ActivityEndTimeSpan ? 2 : 0;
 
     // console.warn("btnStatus", btnStatus)
 
     return (
       <>
         <Helmet>
-          <title>{Name || '开礼盒，抽大奖'}</title>
+          <title>{ActivityName || '开礼盒，抽大奖'}</title>
         </Helmet>
         <Page loading={loading.effects['shake/getInit']} holdText={'加载初始数据中, 请稍后...'}>
           <div className={styles['shake-warp']}>
             <div className={styles['top-tips']}>
-              <p className={styles.Date}>{ DateRangeRender(StartTimeStamp, EndTimeStamp) }</p>
+              <p className={styles.Date}>{DateRangeRender(ActivityStartTimeSpan, ActivityEndTimeSpan)}</p>
             </div>
-            <div className={styles['bg-main']}  ref={this.lottieRef} />
+            <div className={styles['bg-main']} ref={this.lottieRef} />
             <div className={styles.main}>
               <div className={styles['submit-btn']}>
                 {
                   btnStatus === 0 ? <button className={styles['btn-primary'] + ' ' + styles['btn-primary-wave']} onClick={this.getPrizehandle}>
-                    <img className={styles.innerImg} src={require("@/assets/shake-btn.png")} alt=""/>
+                    <img className={styles.innerImg} src={require("@/assets/shake-btn.png")} alt="" />
                   </button> : btnStatus === 2 ? <button className={styles['btn-primary']} onClick={this.getPrizehandle}>
-                    <img className={styles.innerImg} src={require("@/assets/shake-btn-end.png")} alt=""/>
+                    <img className={styles.innerImg} src={require("@/assets/shake-btn-end.png")} alt="" />
                   </button> : <button className={styles['btn-primary']} onClick={this.getPrizehandle}>
-                    <img className={styles.innerImg} src={require("@/assets/shake-btn-nostart.png")} alt=""/>
-                  </button>
+                        <img className={styles.innerImg} src={require("@/assets/shake-btn-nostart.png")} alt="" />
+                      </button>
                 }
               </div>
               <div className={styles['join-num']}><span>可参与{UnUseCount}次</span></div>
@@ -240,7 +240,7 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
               >
                 {
                   allRecord.length !== 0 ? allRecord.map((_: any, i: number) => (
-                    <div key={_.RecordId} className={styles['carousel-item']} style={{WebkitBoxOrient: 'vertical'}}>{`${_.CustomerName}抽中${_.PrizeName}`}</div>
+                    <div key={i} className={styles['carousel-item']} style={{ WebkitBoxOrient: 'vertical' }}>{`${_.Winner}抽中${_.PrizeName}`}</div>
                   )) : null
                 }
               </Carousel>
@@ -274,7 +274,7 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
                     <ul className={styles['gift-list-flex']}>
                       {
                         userRecord.map((_: any, i: number) => (
-                          <li key={_.RecordId}>
+                          <li key={i}>
                             <div>{moment(_.ShowCeateTime).format("YYYY-MM-DD HH:mm")}</div>
                             <div className={styles['list-flex-text']}>{_.PrizeName}</div>
                           </li>
@@ -289,11 +289,14 @@ class ShakePage extends PureComponent<shakeModelState, ShakeState> {
                 holdText={"暂无活动规则"}
                 background={'rgba(255, 255, 255, 0.1)'}
               >
-                <p>1，注册会员可以直接获得3次抽奖机会</p>
-                <p>2，注册会员可以直接获得3次抽奖机会</p>
+                <div dangerouslySetInnerHTML={{
+                  __html: ActivityDetail
+                }} />
+                {/* <p>1，注册会员可以直接获得3次抽奖机会</p>
+                <p>2，注册会员可以直接获得3次抽奖机会</p> */}
               </GameItemCard>
               <GiftModal visible={visible} status={status} img={img} onClose={this.onClose} />
-              <ShareModal {...shareProps}/>
+              <ShareModal {...shareProps} />
             </div>
           </div>
         </Page>

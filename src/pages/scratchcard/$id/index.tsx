@@ -59,9 +59,9 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
       }))
       const { card, dispatch, } = _self.props;
       const { initConfig, activityId } = card;
-      const { OpenId, CustomerId, ShareImage } = initConfig;
-      if(activityId && OpenId && CustomerId && ShareImage){
-        _shareFriendAndCommunity('card','scratchcard', dispatch, ShareImage, activityId, OpenId, CustomerId, '2', '1');
+      const { OpenId, CustomerId, ShareImageUrl } = initConfig;
+      if(activityId && OpenId && CustomerId && ShareImageUrl){
+        _shareFriendAndCommunity('card','scratchcard', dispatch, ShareImageUrl, activityId, OpenId, CustomerId, '2', '1');
       }
 
     });
@@ -97,7 +97,7 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
   shareHandle = () => {
     const { card, dispatch, } = this.props;
     const { initConfig, activityId } = card;
-    const { OpenId, CustomerId, ShareImage } = initConfig;
+    const { OpenId, CustomerId, ShareImageUrl } = initConfig;
     if(!OpenId) {
       alert('分享失败', '活动仅限会员参与，是否注册会员?', [
         { text: '取消', onPress: () => {} },
@@ -108,7 +108,7 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
       this.setState((pre) => ({
         shareVisible: true
       }), () => {
-        _shareFriendAndCommunity('card', 'scratchcard', dispatch, ShareImage, activityId, OpenId, CustomerId, '2', '1');
+        _shareFriendAndCommunity('card', 'scratchcard', dispatch, ShareImageUrl, activityId, OpenId, CustomerId, '2', '1');
       })
     }
   }
@@ -117,7 +117,7 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
   render() {
     const { card, loading, dispatch, location } = this.props;
     const { initConfig, allRecord, userRecord, UnUseCount, activityId } = card;
-    const { StartTimeStamp, EndTimeStamp, Name  } = initConfig;
+    const { ActivityStartTimeSpan, ActivityEndTimeSpan, ActivityName  } = initConfig;
     const { visible, status, img, shareStatus, shareVisible } = this.state;
     const canvasWidth = window.innerWidth;
     const canvasWidth1 = window.innerWidth / 100 * 19.2;
@@ -135,8 +135,8 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
       dispatch,
       location,
       activityId,
-      endDate: EndTimeStamp,
-      startDate: StartTimeStamp
+      endDate: ActivityEndTimeSpan,
+      startDate: ActivityStartTimeSpan
     }
 
     const modalProps = {
@@ -154,13 +154,13 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
     return (
       <>
         <Helmet>
-          <title>{Name || ' 刮刮乐，刮好礼'}</title>
+          <title>{ActivityName || ' 刮刮乐，刮好礼'}</title>
         </Helmet>
         <Page loading={loading.effects['card/getInit']} holdText={'加载初始数据中, 请稍后...'}>
           <div className={styles['games-warp']} id='scratchCard-warp'>
             <div className={styles['bg-warp']}>
               <img src={pointImg} className={styles.bgImg} alt=""/>
-              <p className={styles.Date}>{ DateRangeRender(StartTimeStamp, EndTimeStamp) }</p>
+              <p className={styles.Date}>{ DateRangeRender(ActivityStartTimeSpan, ActivityEndTimeSpan) }</p>
             </div>
             <div className={styles['swiper-area']}>
               {
@@ -221,7 +221,7 @@ class ScratchcardPage extends PureComponent<CardModelState, PageState> {
                       {
                         allRecord.map((_: any, i: number) => (
                           <li key={i}>
-                            <div className={styles['list-flex-name']} style={{WebkitBoxOrient: 'vertical'}}>{_.CustomerName}</div>
+                            <div className={styles['list-flex-name']} style={{WebkitBoxOrient: 'vertical'}}>{_.Winner}</div>
                             <div>{moment(_.ShowCeateTime).format("YYYY-MM-DD HH:mm")}</div>
                             <div className={styles['list-flex-text']} style={{WebkitBoxOrient: 'vertical'}}>{_.PrizeName}</div>
                           </li>

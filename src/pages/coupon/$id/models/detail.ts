@@ -1,6 +1,6 @@
-import {Effect, EffectsCommandMap, Subscription} from 'dva';
+import { Effect, EffectsCommandMap, Subscription } from 'dva';
 import { AnyAction, Reducer } from 'redux';
-import {getCouponDetails} from "@/services/api";
+import { getCouponDetails } from "@/services/api";
 import { pathMatchRegexp } from '@/utils'
 
 export type Effect = (
@@ -66,8 +66,11 @@ const GlobalModel: GlobalModelType = {
   effects: {
     *query({ payload, callback }, { all, call, put }) {
       const response = yield call(getCouponDetails, payload)
+      console.log(response)
+      console.log(1122)
+      alert(1)
       const { Status, Data } = response;
-      if( Status === 1 ){
+      if (Status === 1) {
         yield put({
           type: 'setDetails',
           payload: Data,
@@ -78,7 +81,7 @@ const GlobalModel: GlobalModelType = {
   },
 
   reducers: {
-    setDetails(state, { payload })  {
+    setDetails(state, { payload }) {
       return { ...state, couponInfo: payload };
     },
   },

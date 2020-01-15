@@ -72,9 +72,9 @@ class EGG extends PureComponent<EggsModelState, EggState> {
       _self.setState((pre) => ({shareStatus: false}))
       const { eggs, dispatch } = _self.props;
       const { initConfig, activityId } = eggs;
-      const { OpenId, CustomerId, ShareImage } = initConfig;
-      if(activityId && OpenId && CustomerId && ShareImage) {
-        _shareFriendAndCommunity('eggs','eggs', dispatch, ShareImage, activityId, OpenId, CustomerId, '2', '1');
+      const { OpenId, CustomerId, ShareImageUrl } = initConfig;
+      if(activityId && OpenId && CustomerId && ShareImageUrl) {
+        _shareFriendAndCommunity('eggs','eggs', dispatch, ShareImageUrl, activityId, OpenId, CustomerId, '2', '1');
       }
     });
 
@@ -93,7 +93,7 @@ class EGG extends PureComponent<EggsModelState, EggState> {
             shakeIndex: 0
           })
         }
-        console.log(1212, this.state.shakeIndex)
+        // console.log(1212, this.state.shakeIndex)
       })
     }, 1000)
   }
@@ -134,7 +134,7 @@ class EGG extends PureComponent<EggsModelState, EggState> {
   shareHandle = () => {
     const { eggs, dispatch } = this.props;
     const { initConfig, activityId } = eggs;
-    const { OpenId, CustomerId, ShareImage  } = initConfig;
+    const { OpenId, CustomerId, ShareImageUrl  } = initConfig;
     if(!OpenId) {
       alert('分享失败', '活动仅限会员参与，是否注册会员?', [
         { text: '取消', onPress: () => {} },
@@ -144,7 +144,7 @@ class EGG extends PureComponent<EggsModelState, EggState> {
       this.setState((pre) => ({
         shareVisible: true
       }), () => {
-        _shareFriendAndCommunity('eggs', 'eggs', dispatch, ShareImage, activityId, OpenId, CustomerId, '2', '1');
+        _shareFriendAndCommunity('eggs', 'eggs', dispatch, ShareImageUrl, activityId, OpenId, CustomerId, '2', '1');
       })
     }
   }
@@ -155,10 +155,10 @@ class EGG extends PureComponent<EggsModelState, EggState> {
     e.preventDefault(); // 修复 Android 上点击穿透
     const { eggs, dispatch } = this.props;
     const { UnUseCount, initConfig, activityId } = eggs;
-    const { EndTimeStamp, StartTimeStamp } = initConfig;
+    const { ActivityEndTimeSpan, ActivityStartTimeSpan } = initConfig;
     //过期拦截
-    if(moment().valueOf() < StartTimeStamp) return;
-    if(moment().valueOf() > EndTimeStamp) return;
+    if(moment().valueOf() < ActivityStartTimeSpan) return;
+    if(moment().valueOf() > ActivityEndTimeSpan) return;
     //禁止重复点击
     if(record.status !== 0) return;
 
@@ -185,12 +185,12 @@ class EGG extends PureComponent<EggsModelState, EggState> {
               hammerX: '0',
               hammerY: '-2.66667vw'
             })
-            if( Status === 100 ) {
+            if( Status === 20 ) {
               this._changeEggsStatus(record.id, 1, PrizeImage);
               //更新
               dispatch({type: 'eggs/getAllRecord', payload: { activityId }});
               dispatch({type: 'eggs/getUserRecord', payload: { activityId }});
-            } else if( Status === 101 ) {
+            } else if( Status === 6 ) {
               this._changeEggsStatus(record.id, 2, PrizeImage);
             }else {
               const errorText = codeMessage[Status] || "抽奖失败";
@@ -235,10 +235,10 @@ class EGG extends PureComponent<EggsModelState, EggState> {
 
 
   render() {
-    console.log("this", this.props)
+    // console.log("this", this.props)
     const { eggs, loading,  } = this.props;
     const { initConfig, allRecord, userRecord, UnUseCount } = eggs;
-    const { StartTimeStamp, EndTimeStamp, Name } = initConfig;
+    const { ActivityStartTimeSpan, ActivityEndTimeSpan, ActivityName } = initConfig;
     const { visible, status, shareVisible, img, shareStatus, awards, hammerX, hammerY, hitStatus, shakStatus, shakeIndex } = this.state;
 
     const modalProps = {
@@ -253,18 +253,16 @@ class EGG extends PureComponent<EggsModelState, EggState> {
       onClose: this.shareOnClose
     }
 
-    console.log("", loading.effects['eggs/getInit'])
-
     return (
       <>
         <Helmet>
-          <title>{Name || '砸金蛋，赢红包'}</title>
+          <title>{ActivityName || '砸金蛋，赢红包'}</title>
         </Helmet>
         <Page loading={loading.effects['eggs/getInit']} holdText={'加载初始数据中, 请稍后...'}>
           <div className={styles.eggwarp}>
             <div className={styles['bg-warp']}>
               <img src={require("@/assets/game/eggs-bg.png")} className={styles.innerImg} alt=""/>
-              <p className={styles.Date}>{ DateRangeRender(StartTimeStamp, EndTimeStamp) }</p>
+              <p className={styles.Date}>{ DateRangeRender(ActivityStartTimeSpan, ActivityEndTimeSpan) }</p>
             </div>
             {/*<Eggs {...eggsProps}/>*/}
             <div className={styles['eggs-container']}>
@@ -290,7 +288,7 @@ class EGG extends PureComponent<EggsModelState, EggState> {
                 {
                   //className={styles.egg + ' ' + `${ _.status === 0 ? styles['egg-active'] : ''}`}
                   awards.map((_, i )=> (
-                    <li className={styles['egg-list']} key={_.id} data-index={i} onClick={e => this._pickerHandle(_, e)}>
+                    <li className={styles['egg-list']} key={i} data-index={i} onClick={e => this._pickerHandle(_, e)}>
                       <div className={styles['eggs-warp']}>
                         <div className={classNames(styles.eggs)}>
                           <img
@@ -316,7 +314,7 @@ class EGG extends PureComponent<EggsModelState, EggState> {
             >
               {
                 allRecord.length !== 0 ? allRecord.map((_: any, i: number) => (
-                  <div key={_.RecordId} className={styles['carousel-item']} style={{WebkitBoxOrient: 'vertical'}}>{`${_.CustomerName}抽中${_.PrizeName}`}</div>
+                  <div key={i} className={styles['carousel-item']} style={{WebkitBoxOrient: 'vertical'}}>{`${_.Winner}抽中${_.PrizeName}`}</div>
                 )) : null
               }
             </Carousel>
@@ -350,7 +348,7 @@ class EGG extends PureComponent<EggsModelState, EggState> {
                   <ul className={styles['gift-list-flex']}>
                     {
                       userRecord.map((_: any, i: number) => (
-                        <li key={_.RecordId}>
+                        <li key={i}>
                           <div>{moment(_.ShowCeateTime).format("YYYY-MM-DD HH:mm")}</div>
                           <div className={styles['list-flex-text']}>{_.PrizeName}</div>
                         </li>

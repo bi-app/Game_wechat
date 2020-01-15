@@ -38,26 +38,35 @@ export async function Config(params: configType) {
 }
 /**获取游戏配置信息*/
 export async function getConfig(params: paramsType) {
-  return request(`${wxPrefix}/WestLuckyDraw/ExternalrLuckyDrawInit?${stringify(params)}`);
+  return request(`${process.env.couponPrefix}/ActivityToUi/GetLuckyActivity?${stringify(params)}`);
 }
+
+/**抽奖前检验*/
+export async function getCheckResult(params: paramsType) {
+  request(`${process.env.couponPrefix}/LuckyToUi/LuckyCheck`, {
+    method: 'POST',
+    data: params,
+  });
+}
+
 /**抽奖机会*/
 export async function getAvailableCount(params: paramsType) {
-  return request(`${wxPrefix}/WestLuckyDraw/QueryLuckyChance?${stringify(params)}`);
+  return request(`${process.env.couponPrefix}/LuckyToUi/GetLuckyChanceForAcyivity?${stringify(params)}`);
 }
 
 /**获取活动中奖记录（20）*/
 export async function getAllRecord(params: paramsType) {
-  return request(`${wxPrefix}/WestLuckyDraw/GetShowAllLuckyDrawPrizes?${stringify(params)}`);
+  return request(`${process.env.couponPrefix}/LuckyToUi/GetAllRecords?${stringify(params)}`);
 }
 
 /**获取用户活动中奖记录*/
 export async function getUserRecord(params: paramsType) {
-  return request(`${wxPrefix}/WestLuckyDraw/GetShowUserLuckyDrawPrizes?${stringify(params)}`);
+  return request(`${process.env.couponPrefix}/LuckyToUi/GetMyRecords?${stringify(params)}`);
 }
 
 /**抽奖算法*/
 export async function lotteryHandle(params: paramsType) {
-  return request(`${wxPrefix}/WestLuckyDraw/ExternalLotteryDrawHandle`, {
+  return request(`${process.env.couponPrefix}/LuckyToUi/DrawLottery`, {
     method: 'POST',
     data: params,
   });

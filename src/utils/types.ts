@@ -8,13 +8,20 @@ export interface prizeStatus {
 }
 
 export interface initConfigType {
-  CustomerId: string
-  EndTimeStamp: number
-  LuckyChanceCount: number
-  Name: string
+  ActivityId: string
+  ActivityName: string
+  ActivityImageUrl: string
+  ActivityStartTimeSpan: number
+  ActivityEndTimeSpan: number
+  ShareImageUrl: string
+  ShareDesc: string
+  IsRecommand: number
+  ActivityDetail: string
+  ReproductionUrl: string
+  DrawType: number
+  TurnTableImageUrl: string
   OpenId: string
-  ShareImage: string
-  StartTimeStamp: number
+  CustomerId: string
 }
 
 export interface eggsType {
